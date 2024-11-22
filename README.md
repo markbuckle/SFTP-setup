@@ -46,3 +46,26 @@ Next change the port # from 22 to 2223:
 ```pwsh
 (Get-Content "C:\ProgramData\ssh\sshd_config").replace("#Port 22", "Port 2223") | Set-Content "C:\ProgramData\ssh\sshd_config"
 ```
+Restart the OpenSSH service with:
+```pwsh
+Get-NetTCPConnection -LocalPort 2223 | Select-Object Local*, State, @{Name="ProcessName";Expression={(Get-Process -Id $_.OwningProcess).ProcessName}}, @{Name="ProcessPath";Expression={(Get-Process -Id $_.OwningProcess).Path}} | Format-Table -AutoSize
+```
+If you want to allow or deny specific users or groups,  right click on the windows icon, select "Run". Type this in the run box:
+```run
+%programdata%\ssh\sshd_config
+```
+Open it with notepad and enter something like this at the bottom of the file:
+" # Allow or Deny User and Groups
+AllowGroups mark\adminstrators, mark\ssh_admins
+AllowUsers mark\mark"
+
+## Connect to OpenSSH Server using SFTP
+
+Download the FileZilla Client. 
+
+Once installed:
+<li>go to File -> Site Manager -> Add a new Site called SFTP Server.</li>
+<li>Change the Protocol to SFTP - SSH File Transfer Protocol.</li>
+<li>Populate Host to 192.168.10.5 and Port to 2223.</li>
+<li>Keep the logon type Nornal and populate the User to your-username\administrator and Password</li>
+<li>Click Connect</li>
